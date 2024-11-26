@@ -1,0 +1,22 @@
+{
+    "jugador": [
+        {
+            "nombre": "Rocio",
+            "puntaje": 10,
+            "fecha": "18/11/2024"
+        },
+        {
+            "nombre": "Lu",
+            "puntaje": 10,
+            "fecha": "26/11/2024"
+        }
+    ],
+    "sonido": [
+        {
+            "estado_reproduccion": "0"
+        },
+        {
+            "nivel_volumen": 0.10000000000000003
+        }
+    ]
+}

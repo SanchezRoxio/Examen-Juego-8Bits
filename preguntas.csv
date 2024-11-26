@@ -1,0 +1,14 @@
+pregunta,respuesta_a,respuesta_b,respuesta_c,respuesta_d,respuesta_correcta,porcentaje_aciertos,cantidad_fallos,cantidad_aciertos,cantidad_veces_preguntada
+¿Qué devuelve la función `len()`?,Longitud,Flotante,Cadena,Caracteres,a,65,11,21,32
+¿Símbolo para comentarios en Python?,#,//,--,',a,84,4,22,26
+¿Cómo defines una función?,function,def,fun,func,b,92,2,24,26
+¿Qué bucle recorre listas?,while,for,loop,for in range,b,86,4,25,29
+¿Cómo imprimes en consola?,echo,print(),console.log(),console.writeline(),b,83,5,25,30
+¿Para qué sirve `import`?,Variables,Módulos,Funciones,Objetos,b,88,3,24,27
+¿Primer índice en una lista?,0,1,-1,2,a,82,5,24,29
+¿Cómo conviertes un número a texto?,toString(),str(),convert(),repr(),b,80,5,21,26
+¿Palabra clave para clases?,class,def,object,func,a,28,20,8,28
+¿Operador de igualdad en Python?,=,==,!=,&&,b,93,2,29,31
+¿Función para generar números?,create(),range(),numbers(),newnumber(),b,88,3,23,26
+¿Cómo manejas errores?,if-else,try-except,catch-finally,raise,b,85,4,23,27
+¿Que tipo de dato es TRUE en Python?,Int,Float,Str,Bool,d,33,2,1,3
