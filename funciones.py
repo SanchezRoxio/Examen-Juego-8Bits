@@ -2,7 +2,7 @@ import pygame, sys, csv, random, json, datetime, time
 
 from clases import *
 from consts import *
-                         
+
 def jugar(screen, preguntas, vidas, puntaje_usuario):
     tiempo_inicial = time.time()
     respuestas_correctas = 0  #Cont de respuestas correctas
@@ -129,6 +129,8 @@ def jugar(screen, preguntas, vidas, puntaje_usuario):
                             cant_puntaje = 0
                         sonido_error.play()
                         sonido_error.set_volume(0.5)
+                        tiempo_inicial = time.time()
+                        tiempo_final = tiempo_inicial + duracion_temporizador
                         respuestas_correctas_consecutivas = 0
                         modificar_dato_pregunta(pregunta[0], 'cantidad_veces_preguntada')
                         modificar_dato_pregunta(pregunta[0], 'cantidad_fallos')
