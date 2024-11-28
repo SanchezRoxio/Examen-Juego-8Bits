@@ -4,9 +4,17 @@ from clases import *
 from consts import *
 
 def jugar(screen, preguntas, vidas, puntaje_usuario):
+    '''
+    Establece la configuración principal del juego.
+
+    Ingresa como parámetros las condiciones del juego.
+
+    No retorna un valor. Maneja el flujo del juego y llama a otras funciones
+    para tareas específicas (como manejar el menú principal o registrar puntajes).
+    '''
     tiempo_inicial = time.time()
-    respuestas_correctas = 0  #Cont de respuestas correctas
-    respuestas_correctas_consecutivas = 0  #Cont de respuestas correctas consecutivas
+    respuestas_correctas = 0  #Contador de respuestas correctas
+    respuestas_correctas_consecutivas = 0  #Contador de respuestas correctas consecutivas
     cant_puntaje = puntaje_usuario
     duracion_temporizador = 10
     tiempo_final = tiempo_inicial + duracion_temporizador
@@ -17,15 +25,15 @@ def jugar(screen, preguntas, vidas, puntaje_usuario):
     while vidas >= 1 and len(preguntas) > 0:
         tiempo_restante = int(tiempo_final - time.time())
 
-        if tiempo_restante <= 0:
+        if tiempo_restante <= 0: #Si se acaba el tiempo se resta una vida.
             vidas -= 1
             tiempo_inicial = time.time()
             tiempo_final = tiempo_inicial + duracion_temporizador
             pregunta = seleccionar_pregunta(preguntas)
             eliminar_pregunta(preguntas, pregunta[0])
 
-        mouse_posicion_jugar = pygame.mouse.get_pos()
-        screen.blit(fondo_pantalla_preguntas, (0, 0))
+        mouse_posicion_jugar = pygame.mouse.get_pos() #Me devuelve la posición del mouse en la pantalla.
+        screen.blit(fondo_pantalla_preguntas, (0, 0)) #Se establece el fondo de pantalla.
         txt_vidas = obtener_letra(35).render(f"♥{vidas}", True, RED)
         screen.blit(txt_vidas, (50, 700))
 
@@ -309,8 +317,8 @@ def main_menu(screen):
                     top_10_jugadores(screen)
 
                 if btn_agregar_preguntas.checkear_input(posicion_mouse):
-                     pantalla_agregar_pregunta(screen)
-     
+                    pantalla_agregar_pregunta(screen)
+
                 if btn_salir.checkear_input(posicion_mouse):   
                     pygame.quit()  
                     sys.exit()
@@ -533,7 +541,7 @@ def calcular_y_modificar_porcentaje_aciertos(pregunta):
             cantidad_aciertos = int(i['cantidad_aciertos'])
         
             cantidad_veces_preguntadas = int(i['cantidad_veces_preguntada'])
-                 
+
             cantidad_fallos = int(i['cantidad_fallos'])
             
             porcentaje_fallos = int((cantidad_fallos/ cantidad_veces_preguntadas) * 100)
@@ -545,7 +553,7 @@ def calcular_y_modificar_porcentaje_aciertos(pregunta):
             elif  int((cantidad_aciertos / cantidad_veces_preguntadas) * 100) != 0:
             
                 i['porcentaje_aciertos'] =  int((cantidad_aciertos / cantidad_veces_preguntadas) * 100)  - porcentaje_fallos
-                              
+
     with open('preguntas.csv', mode='w', newline='', encoding='utf-8') as archivo:
         
         escritor = csv.DictWriter(archivo, fieldnames=lista_archivo[0].keys())
