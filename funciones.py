@@ -3,11 +3,15 @@ import pygame, sys, csv, random, json, datetime, time
 from clases import *
 from consts import *
 
-def jugar(screen:tuple[int,int], preguntas:str, vidas:int, puntaje_usuario:int) -> None:
+def jugar(screen:tuple[int,int], preguntas:list, vidas:int, puntaje_usuario:int) -> None:
     '''
     Establece la configuración principal del juego.
 
-    Ingresa como parámetros las condiciones del juego.
+    Parámetros:
+    - Screen: Dimensión de la pantalla.
+    - Preguntas: archivo csv donde se utilizarán las preguntas y respuestas.
+    - Vidas: Cuántas vidas tiene cada jugador.
+    - Puntaje usuario: Puntaje inicial de cada jugador.
 
     No retorna un valor. Maneja el flujo del juego y llama a otras funciones
     para tareas específicas (como manejar el menú principal o registrar puntajes).
@@ -52,6 +56,8 @@ def jugar(screen:tuple[int,int], preguntas:str, vidas:int, puntaje_usuario:int) 
         btn_opcion_c = Boton(imagen=None, pos=(720, 500), text_input=pregunta[3], fuente=obtener_letra(35), color_base=NEGRO, color_hover=RED)
         btn_opcion_d = Boton(imagen=None, pos=(720, 600), text_input=pregunta[4], fuente=obtener_letra(35), color_base=NEGRO, color_hover=RED)
         btn_jugar_back = Boton(imagen=None, pos=(1400, 800), text_input="BACK", fuente=obtener_letra(30), color_base=NEGRO, color_hover=RED)
+        btn_jugar_musica = Boton(imagen = None, pos = (1300, 50), text_input= "♪ OFF/ON", fuente = obtener_letra(35),color_base = NEGRO, color_hover = RED)
+        
 
         # Botón "Pasar"
         if comodin_pasar_disponible:
@@ -76,6 +82,8 @@ def jugar(screen:tuple[int,int], preguntas:str, vidas:int, puntaje_usuario:int) 
         btn_opcion_d.actualizar(screen)
         btn_jugar_back.cambiar_color(mouse_posicion_jugar)
         btn_jugar_back.actualizar(screen)
+        btn_jugar_musica.cambiar_color(mouse_posicion_jugar)
+        btn_jugar_musica.actualizar(screen)
 
         #Verificar los clics
         for event in pygame.event.get():
@@ -84,6 +92,17 @@ def jugar(screen:tuple[int,int], preguntas:str, vidas:int, puntaje_usuario:int) 
                 sys.exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN: #Verifica qué respuesta se seleccionó, en dónde se clickeó.
+                if(btn_jugar_musica.checkear_input(mouse_posicion_jugar)):
+                    if(evaluar_sonido_json("partidas.json") == "0"):
+                        sonido_juego.play()
+                        print("TURN OFF/ON VOLUME")
+                        volumen_actual = leer_json("partidas.json")
+                        sonido_juego.set_volume(volumen_actual["sonido"][1]["nivel_volumen"])
+                        escribir_json_sonido(False)
+
+                    else:
+                        sonido_juego.stop()
+                        escribir_json_sonido(True)
                 if btn_opcion_a.checkear_input(mouse_posicion_jugar):
                     letra_respuesta = "a"
                 elif btn_opcion_b.checkear_input(mouse_posicion_jugar):
@@ -405,7 +424,7 @@ def top_10_jugadores(screen:tuple[int,int])->None:
 
 def leer_csv(ruta_archivo:str)->dict:
     '''
-    Abre el archivo csv en modo lectura y extrae como una lista y los pasa a un diccionario.\n
+    Abre el archivo csv en modo lectura, extrae una lista y los pasa a un diccionario.\n
     Recibe como parámetro la ruta del archivo especificado.\n
     Retorna un diccionario.
     '''
@@ -740,18 +759,21 @@ def pantalla_agregar_pregunta(screen:tuple[int,int])->None:
                     main_menu(screen)  # Regresar al menú principal
 
                 if btn_agregar_pregunta.checkear_input(posicion_mouse):
-                    agregar_pregunta(
-                        valores["pregunta"],
-                        valores["respuesta_a"],
-                        valores["respuesta_b"],
-                        valores["respuesta_c"],
-                        valores["respuesta_d"],
-                        valores["respuesta_correcta"],
-                    )
-                    # Limpiar los valores después de agregar
-                    valores = {campo: "" for campo in campos}
-                    campo_activo = 0
+                    if all(valores[campo].strip() for campo in campos): #Strip: Elimina espacios en blanco, si no se especifica ningún valor/argumento.
+                        agregar_pregunta(
+                            valores["pregunta"],
+                            valores["respuesta_a"],
+                            valores["respuesta_b"],
+                            valores["respuesta_c"],
+                            valores["respuesta_d"],
+                            valores["respuesta_correcta"],
+                        )
+                        # Limpiar los valores después de agregar
+                        valores = {campo: "" for campo in campos}
+                        campo_activo = 0
 
+                    else:
+                        print("Todos los campos tienen que estar llenos.")
             #tecla TAB
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_TAB:
