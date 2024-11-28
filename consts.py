@@ -5,6 +5,8 @@ pygame.init()
 
 SCREEN_RES = (1500,920) #Es la resolución de la pantalla.
 
+#Establecemos los colores.
+
 NEGRO = (0,0,0)
 BLANCO = (255,255,255)
 RED = (255,0,0)
@@ -12,6 +14,8 @@ LIGTH_RED = (227, 66, 51)
 GREEN = (0,255,0)
 LIGTH_GREEN = (215,252,212)
 CELESTE = (215,215,252)
+
+# Se establecen los sonidos.
 
 pygame.mixer.init()
 

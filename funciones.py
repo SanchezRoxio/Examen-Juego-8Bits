@@ -3,7 +3,7 @@ import pygame, sys, csv, random, json, datetime, time
 from clases import *
 from consts import *
 
-def jugar(screen, preguntas, vidas, puntaje_usuario):
+def jugar(screen:tuple[int,int], preguntas:str, vidas:int, puntaje_usuario:int) -> None:
     '''
     Establece la configuración principal del juego.
 
@@ -27,23 +27,23 @@ def jugar(screen, preguntas, vidas, puntaje_usuario):
 
         if tiempo_restante <= 0: #Si se acaba el tiempo se resta una vida.
             vidas -= 1
-            tiempo_inicial = time.time()
+            tiempo_inicial = time.time() #Se reinicia el tiempo inicial.
             tiempo_final = tiempo_inicial + duracion_temporizador
             pregunta = seleccionar_pregunta(preguntas)
             eliminar_pregunta(preguntas, pregunta[0])
 
-        mouse_posicion_jugar = pygame.mouse.get_pos() #Me devuelve la posición del mouse en la pantalla.
+        mouse_posicion_jugar = pygame.mouse.get_pos() #Me devuelve la posición o coordenadas del mouse en la pantalla.
         screen.blit(fondo_pantalla_preguntas, (0, 0)) #Se establece el fondo de pantalla.
-        txt_vidas = obtener_letra(35).render(f"♥{vidas}", True, RED)
+        txt_vidas = obtener_letra(35).render(f"♥{vidas}", True, RED) #Renderiza un texto y lo transforma en una imagen.
         screen.blit(txt_vidas, (50, 700))
 
         pregunta = seleccionar_pregunta(preguntas)
         txt_pregunta = obtener_letra(40).render(pregunta[0], True, NEGRO)
         txt_width = txt_pregunta.get_size()
-        txt_x = (SCREEN_RES[0] - txt_width[0]) // 2
+        txt_x = (SCREEN_RES[0] - txt_width[0]) // 2 #Centra la pregunta en la mitad de la pantalla. Toma los anchos de la pantalla y de la pregunta.
         if txt_width[0] > SCREEN_RES[0]:
             txt_x = 0
-        screen.blit(txt_pregunta, (txt_x, 150))
+        screen.blit(txt_pregunta, (txt_x, 150)) #Posicionando la pregunta.
 
         letra_respuesta = None  #evitar errores
         # Botones de opciones
@@ -65,7 +65,7 @@ def jugar(screen, preguntas, vidas, puntaje_usuario):
             btn_x2.cambiar_color(mouse_posicion_jugar)
             btn_x2.actualizar(screen)
 
-        #Actualizar los botones jeje
+        #Actualizar los botones.
         btn_opcion_a.cambiar_color(mouse_posicion_jugar)
         btn_opcion_a.actualizar(screen)
         btn_opcion_b.cambiar_color(mouse_posicion_jugar)
@@ -83,7 +83,7 @@ def jugar(screen, preguntas, vidas, puntaje_usuario):
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN: #Verifica qué respuesta se seleccionó, en dónde se clickeó.
                 if btn_opcion_a.checkear_input(mouse_posicion_jugar):
                     letra_respuesta = "a"
                 elif btn_opcion_b.checkear_input(mouse_posicion_jugar):
@@ -97,7 +97,7 @@ def jugar(screen, preguntas, vidas, puntaje_usuario):
                     eliminar_pregunta(preguntas, pregunta[0])
                     tiempo_inicial = time.time()
                     tiempo_final = tiempo_inicial + duracion_temporizador
-                    comodin_pasar_disponible = False  #Desactiva el comodin
+                    comodin_pasar_disponible = False  #Desactiva el comodín una vez usado.
                     break
                 elif comodin_x2_disponible and btn_x2.checkear_input(mouse_posicion_jugar):
                     multiplicador_x2 = 2  #Duplicar los puntos
@@ -116,7 +116,7 @@ def jugar(screen, preguntas, vidas, puntaje_usuario):
                 if letra_respuesta:
                     if letra_respuesta == pregunta[5]:
                         puntos_obtenidos = 10 * multiplicador_x2  #Duplica los puntos si X2 esta encendido
-                        cant_puntaje += puntos_obtenidos
+                        cant_puntaje += puntos_obtenidos #Acumulador de los puntos.
                         respuestas_correctas += 1
                         respuestas_correctas_consecutivas += 1
 
@@ -149,18 +149,27 @@ def jugar(screen, preguntas, vidas, puntaje_usuario):
                         sonido_juego.stop()
                         pedir_nombre_jugador(screen, cant_puntaje)
                         return
-        #Temporizador
+
+        #Formato del temporizador
         tiempo_restante = int(tiempo_final - time.time())
-        txt_temporizador = obtener_letra(30).render(f'Tiempo restante: {tiempo_restante}', True, NEGRO)
+        if tiempo_restante > 3:
+            txt_temporizador = obtener_letra(30).render(f'Tiempo restante: {tiempo_restante}', True, NEGRO)
+        else:
+            txt_temporizador = obtener_letra(30).render(f'Tiempo restante: {tiempo_restante}', True, RED)
         rect_temporizador = txt_temporizador.get_rect(center=(300, 800))
         screen.blit(txt_temporizador, rect_temporizador)
 
         time.sleep(0.01)
-        pygame.display.update()
+        pygame.display.update() #Sirve para mostrar los cambios en la pantalla del juego.
 
     pedir_nombre_jugador(screen, cant_puntaje)
 
-def seleccionar_pregunta(preguntas:list): 
+def seleccionar_pregunta(preguntas:list)->list: 
+    '''
+    Selecciona una de las preguntas del csv.\n
+    Ingresa como parámetro ese archivo.\n
+    Retorna la pregunta con sus respectivas respuestas.
+    '''
     
     pregunta = preguntas[0]["pregunta"] 
     respuesta_a = preguntas[0]["respuesta_a"]  
@@ -170,7 +179,11 @@ def seleccionar_pregunta(preguntas:list):
     respuesta_correcta = preguntas[0]["respuesta_correcta"]
     return (pregunta, respuesta_a, respuesta_b, respuesta_c,respuesta_d, respuesta_correcta)
 
-def opciones(screen):
+def opciones(screen:tuple[int,int])->None:
+    '''
+    Contiene la configuración de la pantalla de opciones del juego.\n
+    Recibe como parámetro la dimensión de la pantalla.    
+    '''
     
     while True:
         
@@ -186,14 +199,13 @@ def opciones(screen):
 
         btn_opciones_back = Boton(imagen = None, pos = (1380, 800), text_input = "BACK", fuente = obtener_letra(35), color_base = BLANCO, color_hover = RED)
         
-        btn_opciones_activar_desactivar_sonido = Boton(imagen = None, pos = (380, 400), text_input= "TURN OFF/ON VOLUME", fuente = obtener_letra(35),color_base = BLANCO, color_hover = RED)
+        btn_opciones_activar_desactivar_sonido = Boton(imagen = None, pos = (380, 400), text_input= "TURN OFF/ON VOLUME", fuente = obtener_letra(35),color_base = BLANCO, color_hover = NEGRO)
 
-        btn_opciones_subir_volumen = Boton(imagen = None, pos = (330,500), text_input = "INCREASE VOLUME", fuente = obtener_letra(35), color_base = BLANCO,color_hover = RED)
+        btn_opciones_subir_volumen = Boton(imagen = None, pos = (330,500), text_input = "INCREASE VOLUME", fuente = obtener_letra(35), color_base = BLANCO,color_hover = NEGRO)
 
-        btn_opciones_bajar_volumen = Boton(imagen = None, pos = (330,600), text_input = "DECREASE VOLUME", fuente = obtener_letra(35),color_base = BLANCO, color_hover = RED)
+        btn_opciones_bajar_volumen = Boton(imagen = None, pos = (330,600), text_input = "DECREASE VOLUME", fuente = obtener_letra(35),color_base = BLANCO, color_hover = NEGRO)
         
-        lista_botones = [btn_opciones_activar_desactivar_sonido,btn_opciones_subir_volumen,btn_opciones_bajar_volumen,
-                        btn_opciones_back]
+        lista_botones = [btn_opciones_activar_desactivar_sonido,btn_opciones_subir_volumen,btn_opciones_bajar_volumen,btn_opciones_back]
         
         for boton in lista_botones:
             
@@ -203,7 +215,7 @@ def opciones(screen):
             
         
         for event in pygame.event.get():
-            
+
             if(event.type == pygame.MOUSEBUTTONDOWN):
                 if(btn_opciones_activar_desactivar_sonido.checkear_input(mouse_posicion_opciones)):
                     if(evaluar_sonido_json("partidas.json") == "0"):
@@ -261,7 +273,12 @@ def opciones(screen):
     
         pygame.display.update()
 
-def main_menu(screen):
+def main_menu(screen:tuple[int,int])->None:
+    '''
+    Contiene la configuración de la pantalla principal.\n
+    Recibe como parámetro la dimensión de la pantalla.\n
+    Determina el tamaño y posición de los botones y lo que hace cada uno.
+    '''
 
     pygame.display.set_caption("Menu")
     
@@ -277,12 +294,14 @@ def main_menu(screen):
         
         txt_menu = obtener_letra(70).render("MENU", True, NEGRO)
         rect_menu = txt_menu.get_rect(center=(750,150))
+
+        #Configuro la parte visual de los votones y su posición.
         
         btn_jugar = Boton(imagen=pygame.image.load("Assets/rect_difuminado.png"), pos=(750,250), text_input="PLAY", fuente = obtener_letra(50), color_base= LIGTH_GREEN, color_hover= BLANCO)
         btn_top_10 = Boton(imagen=pygame.image.load("Assets/rect_difuminado.png"), pos=(750,350), text_input="TOP 10", fuente = obtener_letra(50), color_base= LIGTH_GREEN, color_hover= BLANCO)
         btn_opciones = Boton(imagen=pygame.image.load("Assets/rect_difuminado.png"), pos=(750,450), text_input="OPTIONS", fuente = obtener_letra(50), color_base= LIGTH_GREEN, color_hover= BLANCO)
         btn_agregar_preguntas = Boton(imagen=pygame.image.load("Assets/rect_difuminado.png"), pos=(750,550), text_input="ADD QUESTION", fuente = obtener_letra(46), color_base= LIGTH_GREEN, color_hover= BLANCO)
-        btn_salir = Boton(imagen=pygame.image.load("Assets/rect_difuminado.png"), pos=(750,650), text_input="QUIT", fuente = obtener_letra(50), color_base= LIGTH_GREEN, color_hover= BLANCO)
+        btn_salir = Boton(imagen=pygame.image.load("Assets/rect_difuminado.png"), pos=(750,650), text_input="EXIT", fuente = obtener_letra(50), color_base= LIGTH_GREEN, color_hover= BLANCO)
         
         lista_botones = [btn_jugar, btn_opciones, btn_salir, btn_top_10, btn_agregar_preguntas]
         
@@ -294,6 +313,7 @@ def main_menu(screen):
             
             boton.actualizar(screen)
         
+        #Determino la acción que realiza al clickear cada botón.
         for event in pygame.event.get():
             
             if event.type == pygame.QUIT:
@@ -327,7 +347,11 @@ def main_menu(screen):
     
     main_menu(screen)   
 
-def top_10_jugadores(screen):
+def top_10_jugadores(screen:tuple[int,int])->None:
+    '''
+    Contiene la información de la pantalla "TOP 10 JUGADORES".\n
+    Recibe como parámetro la dimensión de la pantalla.
+    '''
     
     x, y = 50 , 150
     
@@ -335,7 +359,7 @@ def top_10_jugadores(screen):
     
     contador = 0
     
-    json_ordenado = ordenar_json('partidas.json', 'jugador', 'puntaje')
+    json_ordenado = ordenar_json('partidas.json', 'jugador', 'puntaje') 
     
     top_10_json_ordenado = json_ordenado[:10]
     
@@ -344,9 +368,9 @@ def top_10_jugadores(screen):
         screen.blit(background_top_10, (0,0))
         
         btn_volver = Boton(imagen=None, pos=(1380,800), text_input="BACK", fuente = obtener_letra(35), color_base = BLANCO, color_hover= LIGTH_RED)
-        
+
         posicion_mouse = pygame.mouse.get_pos()
-        
+
         for event in pygame.event.get():
             
             if event.type == pygame.QUIT:
@@ -379,8 +403,12 @@ def top_10_jugadores(screen):
         btn_volver.actualizar(screen)
         pygame.display.update()
 
-def leer_csv(ruta_archivo):
-    
+def leer_csv(ruta_archivo:str)->dict:
+    '''
+    Abre el archivo csv en modo lectura y extrae como una lista y los pasa a un diccionario.\n
+    Recibe como parámetro la ruta del archivo especificado.\n
+    Retorna un diccionario.
+    '''
     datos = []
     
     with open(ruta_archivo, mode='r', newline='', encoding ='UTF-8') as archivo_csv:
@@ -390,11 +418,15 @@ def leer_csv(ruta_archivo):
         for fila in lector_csv:
             
             datos.append(dict(fila))
-    
+
     return datos
 
-def pedir_nombre_jugador(screen, puntaje):
-     
+def pedir_nombre_jugador(screen:tuple[int,int], puntaje:int)->None:
+    '''
+    Contiene la configuración de la pantalla donde el usuario pone su nombre.\n
+    Recibe como parámetro la dimensión de la pantalla y el puntaje del usuario.
+    '''
+
     sonido_juego.stop()
     datos = leer_json('partidas.json')
     
@@ -421,9 +453,9 @@ def pedir_nombre_jugador(screen, puntaje):
 
         screen.blit(txt_aviso, rect_aviso)
         screen.blit(txt_input, rect_txt)
-        
+
         btn_guardar = Boton(imagen=pygame.image.load("Assets/rect_difuminado.png"), pos=(750,750), text_input="SAVE", fuente = obtener_letra(55), color_base = BLANCO, color_hover= LIGTH_RED)
-        
+
         btn_guardar.cambiar_color(posicion_mouse)
         btn_guardar.actualizar(screen)
         
@@ -432,7 +464,7 @@ def pedir_nombre_jugador(screen, puntaje):
             if event.type == pygame.KEYDOWN:
                 
                 print(event.key)
-                         
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                     
                 if btn_guardar.checkear_input(posicion_mouse):
@@ -470,19 +502,34 @@ def pedir_nombre_jugador(screen, puntaje):
                 txt_letra = obtener_letra(75).render(letra, True, BLANCO)
                         
                 rect_letra = txt_letra.get_rect(center=(750,250))
+
+            if event.type == pygame.QUIT:
+                
+                pygame.quit()
+                
+                sys.exit()
                 
             
         screen.blit(txt_letra, rect_letra)
         pygame.display.update()
 
-def leer_json(ruta_json):
+def leer_json(ruta_json:str)->dict:
+    '''
+    Abre y lee los datos del archivo json.
+    Recibe como parámetro la ruta del archivo.
+    Retorna un diccionario con los datos.
+    '''
     archivo_json = open(ruta_json, 'r')
     datos = json.load(archivo_json) 
     archivo_json.close()
     return datos
 
-def escribir_json(letra, puntaje, fecha_actual):
-    
+def escribir_json(letra:str, puntaje:int, fecha_actual:str)->None:
+    '''
+    Abre e ingresa los datos especificados en el archivo json.\n
+    Recibe como parámetro el nombre (puesto como letra), el puntaje y la fecha actual.\n
+    No retorna nada.
+    '''
     datos = leer_json('partidas.json')
     
     ultimos_datos = {'nombre': letra, 'puntaje': puntaje, 'fecha':fecha_actual}
@@ -495,23 +542,36 @@ def escribir_json(letra, puntaje, fecha_actual):
     
     file.close()
 
-def ordenar_json(ruta_json, clave_json, clave_orden):
+def ordenar_json(ruta_json:str, clave_json:str, clave_orden:str)->dict:
+    '''
+    Ordena de mayor a menor a los jugadores.\n
+    Recibe como parámetro la ruta del json, la clave a tomar en consideración y la clave para ordenar.\n
+    Retorna una diccionario ordenado de los elementos del archivo JSON en orden descendente según la clave de orden especificada.
+    '''
     
     archivo_json = leer_json(ruta_json)
     
     jugadores_ordenados = sorted(archivo_json[clave_json], key=lambda x: x[clave_orden], reverse=True)
                 
     return jugadores_ordenados
-        
-def cargar_csv_lista(ruta):
-    
+
+def cargar_csv_lista(ruta:str)->list:
+    '''
+    Abre el archivo csv e ingresa los datos en una lista.\n
+    Toma como parámetro la ruta especificada.\n
+    Retorna una lista con la información.
+    '''
     with open(ruta, mode='r', newline='', encoding='utf8') as archivo:
         
         lector = csv.DictReader(archivo)
         
         return list(lector)
 
-def modificar_dato_pregunta(pregunta, clave):
+def modificar_dato_pregunta(pregunta:str, clave:str)->None:
+    '''
+    Modifica dentro del archivo csv el dato especificado de la pregunta especificada.\n
+    Ingresa como parámetro la pregunta y su clave.\n
+    '''
     lista_archivo = cargar_csv_lista('preguntas.csv')
     
     for i in lista_archivo:
@@ -520,7 +580,7 @@ def modificar_dato_pregunta(pregunta, clave):
             if i[clave].isdigit():
                 i[clave] = int(i[clave]) + 1
             else:
-                #si el no es un numero, inicializa con 1
+                #si éste no es un número, inicializa con 1
                 i[clave] = 1
             #cadena para guardar en el CSV
             i[clave] = str(i[clave])
@@ -530,7 +590,12 @@ def modificar_dato_pregunta(pregunta, clave):
         escritor.writeheader()
         escritor.writerows(lista_archivo)
 
-def calcular_y_modificar_porcentaje_aciertos(pregunta):
+def calcular_y_modificar_porcentaje_aciertos(pregunta:str)-> int:
+    '''
+    Modifica el porcentaje de aciertos en el CSV.\n
+    Ingresa como parámetro la pregunta.\n
+    Retorna el porcentaje actualizado de aciertos.
+    '''
     
     lista_archivo = cargar_csv_lista('preguntas.csv')
 
@@ -560,13 +625,21 @@ def calcular_y_modificar_porcentaje_aciertos(pregunta):
         escritor.writeheader()
         escritor.writerows(lista_archivo)
 
-def reproducir_musica_fondo():
+def reproducir_musica_fondo()->None:
+    '''
+    Hace que comience la reproducción de la música de fondo.
+    '''
     escribir_json_sonido(False)
     sonido_ambiente.play()
     volumen_actual = leer_json("partidas.json")
     sonido_ambiente.set_volume(volumen_actual["sonido"][1]["nivel_volumen"])
-    
-def evaluar_sonido_json(ruta_json):
+
+def evaluar_sonido_json(ruta_json:str)->int:
+    '''
+    Lee el archivo json y extrae la información necesaria.\n
+    Ingresa como parámetro la ruta del archivo.\n
+    Retorna el estado del sonido.
+    '''
 
     datos = leer_json(ruta_json)
 
@@ -574,7 +647,10 @@ def evaluar_sonido_json(ruta_json):
 
     return estado_sonido
 
-def modificar_sonido(valor):
+def modificar_sonido(valor:bool)->None:
+    '''
+    Lee los datos del archivo json y aumenta o disminuye el sonido.
+    '''
     datos = leer_json("partidas.json")
 
     if(valor == True):
@@ -588,18 +664,24 @@ def modificar_sonido(valor):
 
         json.dump(datos,archivo,indent=4)
 
-def obtener_letra(tamaño): 
+def obtener_letra(tamaño:int)->None:
+    '''
+    Tiene como parámetro el tamaño de la letra deseada.\n
+    Retorna la función para cambiar el tipo de letra.
+    '''
     return pygame.font.Font("Assets/font.ttf", tamaño)
 
-def escribir_json_sonido(valor_antiguo):
+def escribir_json_sonido(valor_antiguo:bool)->None:
+    '''
+    Lee los datos del json, extrae la información del sonido y la modifica en base al parámetro ingresado.\n
+    Ingresa por parámetro el estado del sonido anterior (si está encendido o apagado).
+    '''
 
     datos = leer_json('partidas.json')
 
     if(valor_antiguo == True):
-
         datos["sonido"][0]["estado_reproduccion"] = "0"
     else:
-
         datos["sonido"][0]["estado_reproduccion"] = "1"
 
     with open("partidas.json", "w") as file:
@@ -608,12 +690,20 @@ def escribir_json_sonido(valor_antiguo):
 
     file.close()
 
-def agregar_pregunta(pregunta, respuesta_a, respuesta_b, respuesta_c, respuesta_d, respuesta_correcta):
+def agregar_pregunta(pregunta:str, respuesta_a:str, respuesta_b:str, respuesta_c:str, respuesta_d:str, respuesta_correcta:str)->None:
+    '''
+    Abre el archivo csv y permite agregar una nueva pregunta al mismo.\n
+    Recibe como parámetro la pregunta y sus respectivas respuestas.
+    '''
     with open('preguntas.csv', mode='a', newline='', encoding='utf-8') as file:  # Asegúrate de incluir encoding
         writer = csv.writer(file)
         writer.writerow([pregunta, respuesta_a, respuesta_b, respuesta_c, respuesta_d, respuesta_correcta, 0, 0, 0, 0])
 
-def pantalla_agregar_pregunta(screen):
+def pantalla_agregar_pregunta(screen:tuple[int,int])->None:
+    '''
+    Contiene toda la configuración de la pantalla de "Agregar pregunta".\n
+    Recibe como parámetro la dimensión de la pantalla.
+    '''
     # Variables para las entradas de texto
     campos = ["pregunta", "respuesta_a", "respuesta_b", "respuesta_c", "respuesta_d", "respuesta_correcta"]
     valores = {campo: "" for campo in campos}  # Almacena los valores de cada campo
@@ -675,7 +765,7 @@ def pantalla_agregar_pregunta(screen):
         # Mostrar los campos y los textos ingresados
         y_offset = 200
         for i, campo in enumerate(campos):
-            color = LIGTH_GREEN if i == campo_activo else BLANCO
+            color = NEGRO if i == campo_activo else BLANCO
             texto_campo = obtener_letra(30).render(f"{campo.replace('_', ' ').upper()}: {valores[campo]}", True, color)
             rect_campo = texto_campo.get_rect(topleft=(100, y_offset))
             screen.blit(texto_campo, rect_campo)
@@ -684,8 +774,11 @@ def pantalla_agregar_pregunta(screen):
         # Actualizar la pantalla
         pygame.display.update()
 
-def eliminar_pregunta(preguntas:list, pregunta):
-    
+def eliminar_pregunta(preguntas:list, pregunta)->None:
+
+    '''
+    Elimina la pregunta que tocó dentro de la lista de preguntas (por partida)
+    '''
     for i in range(len(preguntas)):
         
         if preguntas[i]["pregunta"] == pregunta:
